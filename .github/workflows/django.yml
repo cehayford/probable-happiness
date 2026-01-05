@@ -1,10 +1,13 @@
 name: Django CI
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  # Workflow disabled to prevent GitHub Actions billing
+  # To re-enable, uncomment the triggers below:
+  # push:
+  #   branches: [ main, develop ]
+  # pull_request:
+  #   branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger only
 
 concurrency:
   group: django-ci-${{ github.ref }}
