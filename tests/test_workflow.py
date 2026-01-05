@@ -30,8 +30,8 @@ def test_workflow_triggers():
     triggers = workflow["on"]
     assert "push" in triggers, "Workflow missing 'push' trigger"
     assert "pull_request" in triggers, "Workflow missing 'pull_request' trigger"
-    assert triggers["push"]["branches"] == ["main", "develop", ], "Push branches should be main and develop"
-    assert triggers["pull_request"]["branches"] == [ "main", "develop",], "PR branches should be main and develop"
+    assert triggers["push"]["branches"] == ["main", "develop"], "Push branches should be main and develop"
+    assert triggers["pull_request"]["branches"] == ["main", "develop"], "PR branches should be main and develop"
 
 
 def test_workflow_has_concurrency():
@@ -73,7 +73,11 @@ def test_lint_job():
     lint_job = workflow["jobs"]["lint"]
     assert lint_job["runs-on"] == "ubuntu-latest", "Lint job should run on ubuntu-latest"
     assert "needs" in lint_job, "Lint job should depend on test job"
-    assert lint_job["needs"] == "test", "Lint job should depend on test"
+    needs = lint_job["needs"]
+    if isinstance(needs, list):
+        assert "test" in needs, "Lint job should depend on test"
+    else:
+        assert needs == "test", "Lint job should depend on test"
     steps = lint_job["steps"]
     step_names = [step.get("name") for step in steps if "name" in step]
     assert any("black" in name.lower() for name in step_names), "Missing Black check"
@@ -86,6 +90,11 @@ def test_security_job():
     security_job = workflow["jobs"]["security"]
     assert (security_job["runs-on"] == "ubuntu-latest"), "Security job should run on ubuntu-latest"
     assert "needs" in security_job, "Security job should have dependencies"
+    needs = security_job["needs"]
+    if isinstance(needs, list):
+        assert "test" in needs, "Security job should depend on test"
+    else:
+        assert needs == "test", "Security job should depend on test"
     steps = security_job["steps"]
     step_names = [step.get("name") for step in steps if "name" in step]
     assert any("bandit" in name.lower() for name in step_names), "Missing Bandit check"
@@ -100,6 +109,11 @@ def test_build_job():
     build_job = workflow["jobs"]["build"]
     assert (build_job["runs-on"] == "ubuntu-latest"), "Build job should run on ubuntu-latest"
     assert "needs" in build_job, "Build job should depend on other jobs"
+    needs = build_job["needs"]
+    if isinstance(needs, list):
+        assert "test" in needs and "lint" in needs, "Build job should depend on test and lint"
+    else:
+        assert needs in ["test", "lint"], "Build job should depend on test or lint"
     assert "if" in build_job, "Build job should have condition"
     assert ("main" in build_job["if"]), "Build job should only run on main branch"
     steps = build_job["steps"]
