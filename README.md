@@ -1,5 +1,4 @@
-# Probable Happiness
-
+# Project
 A Django-based web-based voting system application.
 
 ## Recommended: create and activate a virtual environment
