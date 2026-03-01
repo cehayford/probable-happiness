@@ -147,7 +147,7 @@ jobs:
         run: zip -r deploy.zip . -x '*.git*' '*__pycache__*' '*.pyc' '*.env'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: django-app
           path: deploy.zip
